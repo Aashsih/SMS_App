@@ -58,7 +58,6 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     public static DatabaseCommunicator getInstance(@NonNull Context context){
         if(databaseCommunicator == null){
             databaseCommunicator = new MessageHistoryDatabase(context);
-
         }
         return databaseCommunicator;
     }
@@ -153,7 +152,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
 
     //The following methods were created for testing purpose
     private void addMockData(){
-        addMessageToDatabase(new Message("1","2","Hi"));
+        addMessageToDatabase(new Message("021","2","Hi"));
         addMessageToDatabase(new Message("1","2","Hi"));
         addMessageToDatabase(new Message("1","2","Hi"));
         addMessageToDatabase(new Message("2","3","Hi"));

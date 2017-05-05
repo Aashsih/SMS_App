@@ -29,7 +29,7 @@ import com.head_first.aashi.sms.data_handler.MessageHistoryDatabase;
 import com.head_first.aashi.sms.interfaces.DatabaseCommunicator;
 import com.head_first.aashi.sms.utils.StringUtil;
 
-public class MessageList extends AppCompatActivity{// implements DialogInterface.OnClickListener{
+public class ContactList extends AppCompatActivity{// implements DialogInterface.OnClickListener{
 
     private static final int READ_PHONE_STATE_PERMISSION_REQUEST_CODE = 0;
 
@@ -48,7 +48,7 @@ public class MessageList extends AppCompatActivity{// implements DialogInterface
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_list);
+        setContentView(R.layout.activity_contact_list);
         databaseCommunicator = MessageHistoryDatabase.getInstance(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,7 +57,7 @@ public class MessageList extends AppCompatActivity{// implements DialogInterface
         mCreateNewMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent newMessageIntent = new Intent(MessageList.this, NewMessage.class);
+                Intent newMessageIntent = new Intent(ContactList.this, NewMessage.class);
                 startActivity(newMessageIntent);
             }
         });
@@ -147,10 +147,10 @@ public class MessageList extends AppCompatActivity{// implements DialogInterface
                 if(dialog == confirmPhoneNumberAlertDialog){
                     String currentDevicePhoneNumber = mPhoneNumberEditText.getText().toString();
                     if(currentDevicePhoneNumber != null && StringUtil.isNumeric(currentDevicePhoneNumber)){
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MessageList.this).edit();
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactList.this).edit();
                         editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
                         editor.commit();
-                        contactListAdapter = new ArrayAdapter<String>(MessageList.this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+                        contactListAdapter = new ArrayAdapter<String>(ContactList.this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
                         mContactList.setAdapter(contactListAdapter);
                         confirmPhoneNumberAlertDialog.dismiss();
                     }
@@ -174,10 +174,10 @@ public class MessageList extends AppCompatActivity{// implements DialogInterface
 //        if(dialog == confirmPhoneNumberAlertDialog){
 //            String currentDevicePhoneNumber = mPhoneNumberEditText.getText().toString();
 //            if(currentDevicePhoneNumber != null && StringUtil.isNumeric(currentDevicePhoneNumber)){
-//                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MessageList.this).edit();
+//                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactList.this).edit();
 //                editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
 //                editor.commit();
-//                contactListAdapter = new ArrayAdapter<String>(MessageList.this, R.layout.activity_message_list, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+//                contactListAdapter = new ArrayAdapter<String>(ContactList.this, R.layout.activity_contact_list, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
 //                mContactList.setAdapter(contactListAdapter);
 //                confirmPhoneNumberAlertDialog.dismiss();
 //            }
