@@ -174,6 +174,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
 
     //The following methods were created for testing purpose
     private void addMockData(){
+        //for emulator 15555215554
         addMessageToDatabase(new Message("021","15555215554","Hi I am a stranger"));
         addMessageToDatabase(new Message("15555215554","021","I will block you now"));
         addMessageToDatabase(new Message("021","15555215554","My name is barry allen and i am the fastest man alive"));

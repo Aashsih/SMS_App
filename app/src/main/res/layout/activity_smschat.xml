@@ -35,7 +35,10 @@
         android:id="@+id/smsChat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/messageText">
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:layout_above="@id/messageText"
+        android:layout_alignParentTop="true">
     </ListView>
 
 </RelativeLayout>
