@@ -38,7 +38,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             "CREATE TABLE " + TABLE_NAME +
             "("+ PRIMARY_KEY_COLUMN_NAME +" int NOT NULL, "+ SENT_BY_COLUMN_NAME + " varchar(12) NOT NULL, "
             + SENT_TO_COLUMN_NAME + " varchar(12) NOT NULL, "
-            + MESSAGE_COLUMN_NAME +" varchar(MAX) NOT NULL,"
+            + MESSAGE_COLUMN_NAME +" varchar(1000) NOT NULL,"
             +" PRIMARY KEY (Id));";
     private static final String GET_ROW_COUNT = "SELECT COUNT(*) FROM " + TABLE_NAME + "";
     private static final String GET_DISTINCT_SENT_BY_PHONE_NUMBERS = "SELECT DISTINCT " + SENT_BY_COLUMN_NAME
@@ -58,6 +58,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     public static DatabaseCommunicator getInstance(@NonNull Context context){
         if(databaseCommunicator == null){
             databaseCommunicator = new MessageHistoryDatabase(context);
+
         }
         return databaseCommunicator;
     }
@@ -94,7 +95,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         if(!StringUtil.isNumeric(currentDevicePhoneNumber)){
             throw new IllegalArgumentException("The current device phone ()"+ currentDevicePhoneNumber +" number should be numeric");
         }
-        List<String> contactList = new ArrayList<>();
+        Set<String> contactList = new HashSet<>();
         Cursor cursor = getReadableDatabase().rawQuery(GET_DISTINCT_SENT_BY_PHONE_NUMBERS, null);
         if(cursor != null){
             while(cursor.moveToNext()){
@@ -108,12 +109,12 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         if(cursor != null){
             while(cursor.moveToNext()){
                 String phoneNumber = cursor.getString(0);
-                if(!currentDevicePhoneNumber.equalsIgnoreCase(phoneNumber)){
+                if(!currentDevicePhoneNumber.equalsIgnoreCase(phoneNumber) && !contactList.contains(phoneNumber)){
                     contactList.add(phoneNumber);
                 }
             }
         }
-        return contactList;
+        return new ArrayList<>(contactList);
     }
 
     @Override
@@ -126,13 +127,17 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     }
 
     private int getRowCount(){
+        int rowCount = -1;
         Cursor cursor = getReadableDatabase().query(true, TABLE_NAME, new String[]{"COUNT("+ PRIMARY_KEY_COLUMN_NAME +")"}, null, null, null, null, null, null);
         if(cursor != null){
-            return cursor.getInt(0);
+            while(cursor.moveToNext()){
+                rowCount = cursor.getInt(0);
+            }
         }
         else{
             throw new SQLiteAbortException();
         }
+        return rowCount;
     }
 
     private String getSQLStringRepresentationOfArray(@NonNull Object[] array){
@@ -146,6 +151,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         return string;
     }
 
+    //The following methods were created for testing purpose
     private void addMockData(){
         addMessageToDatabase(new Message("1","2","Hi"));
         addMessageToDatabase(new Message("1","2","Hi"));
@@ -153,6 +159,13 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         addMessageToDatabase(new Message("2","3","Hi"));
         addMessageToDatabase(new Message("2","1","Hi"));
         addMessageToDatabase(new Message("2","3","Hi"));
+    }
 
+    private void getAllDatabaseInfo(){
+        List<Message> messageList = new ArrayList<>();
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        while(cursor.moveToNext()){
+            messageList.add(new Message(cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+        }
     }
 }

@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -30,20 +29,21 @@ import com.head_first.aashi.sms.data_handler.MessageHistoryDatabase;
 import com.head_first.aashi.sms.interfaces.DatabaseCommunicator;
 import com.head_first.aashi.sms.utils.StringUtil;
 
-public class MessageList extends AppCompatActivity {
+public class MessageList extends AppCompatActivity{// implements DialogInterface.OnClickListener{
 
     private static final int READ_PHONE_STATE_PERMISSION_REQUEST_CODE = 0;
 
     //Views
     private ListView mContactList;
     private FloatingActionButton mCreateNewMessageButton;
+    private AlertDialog confirmPhoneNumberAlertDialog;
+    //private EditText mPhoneNumberEditText;
 
     //Adapters
     ArrayAdapter<String> contactListAdapter;
 
     //Data
     private DatabaseCommunicator databaseCommunicator;
-    private String currentDevicePhoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,17 +103,17 @@ public class MessageList extends AppCompatActivity {
     }
 
     public void setupContactList(){
-        currentDevicePhoneNumber = ((TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
+        String currentDevicePhoneNumber = ((TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
         if(currentDevicePhoneNumber == null || currentDevicePhoneNumber.isEmpty()){
-            while(currentDevicePhoneNumber == null || !StringUtil.isNumeric(currentDevicePhoneNumber)){
-                showAlertDiaglogToEnterPhoneNumber();
-            }
+            showAlertDialogToEnterPhoneNumber();
+        }
+        else{
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
             editor.commit();
+            contactListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+            mContactList.setAdapter(contactListAdapter);
         }
-        contactListAdapter = new ArrayAdapter<String>(this, R.layout.activity_message_list, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
-        mContactList.setAdapter(contactListAdapter);
     }
 
     private void requestUserPermissionToReadPhoneState(){
@@ -131,19 +131,33 @@ public class MessageList extends AppCompatActivity {
         }
     }
 
-    private void showAlertDiaglogToEnterPhoneNumber(){
+    private void showAlertDialogToEnterPhoneNumber(){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View confirmPhoneNumerDialogView = inflater.inflate(R.layout.dialog_confirm_phone_number, null);
         dialogBuilder.setView(confirmPhoneNumerDialogView);
-
         final EditText mPhoneNumberEditText = (EditText) confirmPhoneNumerDialogView.findViewById(R.id.phoneNumber);
 
         dialogBuilder.setTitle("Welcome to SMS");
         dialogBuilder.setMessage(R.string.requestUserPhoneNumber);
+        dialogBuilder.setCancelable(false);
         dialogBuilder.setPositiveButton(R.string.confirmNumber, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                currentDevicePhoneNumber = mPhoneNumberEditText.getText().toString();
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(dialog == confirmPhoneNumberAlertDialog){
+                    String currentDevicePhoneNumber = mPhoneNumberEditText.getText().toString();
+                    if(currentDevicePhoneNumber != null && StringUtil.isNumeric(currentDevicePhoneNumber)){
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MessageList.this).edit();
+                        editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
+                        editor.commit();
+                        contactListAdapter = new ArrayAdapter<String>(MessageList.this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+                        mContactList.setAdapter(contactListAdapter);
+                        confirmPhoneNumberAlertDialog.dismiss();
+                    }
+                    else{
+                        showAlertDialogToEnterPhoneNumber();
+                    }
+                }
             }
         });
         dialogBuilder.setNegativeButton(R.string.quitApp, new DialogInterface.OnClickListener() {
@@ -151,7 +165,25 @@ public class MessageList extends AppCompatActivity {
                 finish();
             }
         });
-        AlertDialog b = dialogBuilder.create();
-        b.show();
+        confirmPhoneNumberAlertDialog = dialogBuilder.create();
+        confirmPhoneNumberAlertDialog.show();
     }
+
+//    @Override
+//    public void onClick(DialogInterface dialog, int which) {
+//        if(dialog == confirmPhoneNumberAlertDialog){
+//            String currentDevicePhoneNumber = mPhoneNumberEditText.getText().toString();
+//            if(currentDevicePhoneNumber != null && StringUtil.isNumeric(currentDevicePhoneNumber)){
+//                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MessageList.this).edit();
+//                editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
+//                editor.commit();
+//                contactListAdapter = new ArrayAdapter<String>(MessageList.this, R.layout.activity_message_list, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+//                mContactList.setAdapter(contactListAdapter);
+//                confirmPhoneNumberAlertDialog.dismiss();
+//            }
+//            else{
+//                showAlertDialogToEnterPhoneNumber();
+//            }
+//        }
+//    }
 }
