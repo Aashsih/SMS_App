@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">SMS</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="acceptReadPhoneStatePermission">Please Allow App to Read Device Phone Number</string>
+    <string name="currentDevicePhoneNumber">CurrentDevicePhoneNumber</string>
+
+    <!-- MessageListActivity -->
+    <string name="messageListActionBarTitle">Messages</string>
+
+    <!-- NewMessageActivity/activity_new_message constants -->
+    <string name="newMessageActionBarTitle">New Message</string>
+    <string name="sendToHint">To</string>
+    <string name="enterMessageTextHint">Enter Message Text</string>
+
+    <!-- dialog_confirm_phone_number constants -->
+    <string name="requestUserPhoneNumber">Please confirm your phone number</string>
+    <string name="enterNumberHint">Phone Number</string>
+    <string name="confirmNumber">Confirm</string>
+    <string name="quitApp">Quit App</string>
+
+</resources>
