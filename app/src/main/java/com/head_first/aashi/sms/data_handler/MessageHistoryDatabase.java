@@ -14,8 +14,10 @@ import com.head_first.aashi.sms.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,13 +43,18 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             + MESSAGE_COLUMN_NAME +" varchar(1000) NOT NULL,"
             +" PRIMARY KEY (Id));";
     private static final String GET_ROW_COUNT = "SELECT COUNT(*) FROM " + TABLE_NAME + "";
-    private static final String GET_DISTINCT_SENT_BY_PHONE_NUMBERS = "SELECT DISTINCT " + SENT_BY_COLUMN_NAME
-            + " FROM " + TABLE_NAME;
-    private static final String GET_DISTINCT_SENT_TO_PHONE_NUMBERS_NOT_IN_SENT_BY = "SELECT DISTINCT " + SENT_TO_COLUMN_NAME
+    private static final String GET_ORDERED_DISTINCT_SENT_BY_PHONE_NUMBERS = "SELECT MAX("+ PRIMARY_KEY_COLUMN_NAME +"), " + SENT_BY_COLUMN_NAME
             + " FROM " + TABLE_NAME
-            + " WHERE " + SENT_TO_COLUMN_NAME + " NOT IN (?)";
+            + " GROUP BY " + SENT_BY_COLUMN_NAME + ";";
+    private static final String GET_ORDERED_DISTINCT_SENT_TO_PHONE_NUMBERS = "SELECT MAX("+ PRIMARY_KEY_COLUMN_NAME +"), " + SENT_TO_COLUMN_NAME
+            + " FROM " + TABLE_NAME
+            + " GROUP BY " + SENT_TO_COLUMN_NAME + ";";
     private static final String GET_MESSAGES_BETWEEN_PHONE_NUMBERS =
-            "SELECT " + SENT_BY_COLUMN_NAME + "," + SENT_TO_COLUMN_NAME + "," + MESSAGE_COLUMN_NAME;
+            "SELECT " + SENT_BY_COLUMN_NAME + "," + SENT_TO_COLUMN_NAME + "," + MESSAGE_COLUMN_NAME
+            + " FROM " + TABLE_NAME
+            + " WHERE (" + SENT_BY_COLUMN_NAME + " = ? AND " + SENT_TO_COLUMN_NAME + " = ?)"
+                + " OR (" + SENT_TO_COLUMN_NAME + " = ? AND " + SENT_BY_COLUMN_NAME + " = ?)"
+            + "ORDER BY " + PRIMARY_KEY_COLUMN_NAME;
 
     private static DatabaseCommunicator databaseCommunicator;
 
@@ -90,39 +97,54 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     }
 
     @Override
-    public List<String> getAllDistinctContacts(@NonNull String currentDevicePhoneNumber){
+    public List<String> getAllOrderedDistinctContacts(@NonNull String currentDevicePhoneNumber){
+        List<String> listOfOrderedDistinctContacts = new ArrayList<>();
         if(!StringUtil.isNumeric(currentDevicePhoneNumber)){
             throw new IllegalArgumentException("The current device phone ()"+ currentDevicePhoneNumber +" number should be numeric");
         }
+        Map<Integer, String> idToPhoneNumberMap = new HashMap<>();
         Set<String> contactList = new HashSet<>();
-        Cursor cursor = getReadableDatabase().rawQuery(GET_DISTINCT_SENT_BY_PHONE_NUMBERS, null);
+        Cursor cursor = getReadableDatabase().rawQuery(GET_ORDERED_DISTINCT_SENT_BY_PHONE_NUMBERS, null);
         if(cursor != null){
             while(cursor.moveToNext()){
-                String phoneNumber = cursor.getString(0);
+                String phoneNumber = cursor.getString(1);
                 if(!currentDevicePhoneNumber.equalsIgnoreCase(phoneNumber)){
                     contactList.add(phoneNumber);
+                    idToPhoneNumberMap.put(cursor.getInt(0), phoneNumber);
                 }
             }
         }
-        cursor = getReadableDatabase().rawQuery(GET_DISTINCT_SENT_TO_PHONE_NUMBERS_NOT_IN_SENT_BY, new String[]{getSQLStringRepresentationOfArray(contactList.toArray())});
+        cursor = getReadableDatabase().rawQuery(GET_ORDERED_DISTINCT_SENT_TO_PHONE_NUMBERS, null);
         if(cursor != null){
             while(cursor.moveToNext()){
-                String phoneNumber = cursor.getString(0);
+                String phoneNumber = cursor.getString(1);
                 if(!currentDevicePhoneNumber.equalsIgnoreCase(phoneNumber) && !contactList.contains(phoneNumber)){
                     contactList.add(phoneNumber);
+                    idToPhoneNumberMap.put(cursor.getInt(0), phoneNumber);
                 }
             }
         }
-        return new ArrayList<>(contactList);
+        List<Integer> sortedIds = new ArrayList<>(idToPhoneNumberMap.keySet());
+        Collections.sort(sortedIds);
+        for(Integer id : sortedIds){
+            listOfOrderedDistinctContacts.add(idToPhoneNumberMap.get(id));
+        }
+        return listOfOrderedDistinctContacts;
     }
 
     @Override
     public List<Message> getListOfMessagesExchangedBetweenPhoneNumbers(@NonNull String phoneNumber1, @NonNull String phoneNumber2){
+        List<Message> messageList = new ArrayList<>();
         if(!StringUtil.isNumeric(phoneNumber1) || !StringUtil.isNumeric(phoneNumber2)){
             throw new IllegalArgumentException("The provided phone numbers should be numeric");
         }
-
-        return null;
+        Cursor cursor = getReadableDatabase().rawQuery(GET_MESSAGES_BETWEEN_PHONE_NUMBERS, new String[] {phoneNumber1, phoneNumber2, phoneNumber1, phoneNumber2});
+        if(cursor != null){
+            while(cursor.moveToNext()){
+                messageList.add(new Message(cursor.getString(0), cursor.getString(1), cursor.getString(2)));
+            }
+        }
+        return messageList;
     }
 
     private int getRowCount(){
@@ -152,12 +174,17 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
 
     //The following methods were created for testing purpose
     private void addMockData(){
-        addMessageToDatabase(new Message("021","2","Hi"));
-        addMessageToDatabase(new Message("1","2","Hi"));
-        addMessageToDatabase(new Message("1","2","Hi"));
-        addMessageToDatabase(new Message("2","3","Hi"));
-        addMessageToDatabase(new Message("2","1","Hi"));
-        addMessageToDatabase(new Message("2","3","Hi"));
+        addMessageToDatabase(new Message("021","15555215554","Hi I am a stranger"));
+        addMessageToDatabase(new Message("15555215554","021","I will block you now"));
+        addMessageToDatabase(new Message("021","15555215554","My name is barry allen and i am the fastest man alive"));
+        addMessageToDatabase(new Message("15555215554","021","Ohk! then we can talk"));
+        addMessageToDatabase(new Message("021","15555215554","So what do you think about my show?"));
+        addMessageToDatabase(new Message("15555215554","021","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("15555215554","022","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("15555215554","022","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("022","15555215554","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("022","15555215554","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("055","15555215554","Get Faster you idiot!"));
     }
 
     private void getAllDatabaseInfo(){

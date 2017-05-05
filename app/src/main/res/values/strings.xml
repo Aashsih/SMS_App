@@ -4,6 +4,7 @@
 
     <string name="acceptReadPhoneStatePermission">Please Allow App to Read Device Phone Number</string>
     <string name="currentDevicePhoneNumber">CurrentDevicePhoneNumber</string>
+    <string name="otherContactPhoneNumber">SenderPhoneNumber</string>
 
     <!-- MessageListActivity -->
     <string name="messageListActionBarTitle">Messages</string>

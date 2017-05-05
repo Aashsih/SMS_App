@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -62,6 +63,14 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
             }
         });
         mContactList  = (ListView) findViewById(R.id.contactList);
+        mContactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent smsChatIntent = new Intent(ContactList.this, SMSChatActivity.class);
+                smsChatIntent.putExtra(getResources().getString(R.string.otherContactPhoneNumber),contactListAdapter.getItem(position));
+                startActivity(smsChatIntent);
+            }
+        });
         requestUserPermissionToReadPhoneState();
     }
 
@@ -111,7 +120,7 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
             editor.commit();
-            contactListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+            contactListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllOrderedDistinctContacts(currentDevicePhoneNumber));
             mContactList.setAdapter(contactListAdapter);
         }
     }
@@ -150,7 +159,7 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactList.this).edit();
                         editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
                         editor.commit();
-                        contactListAdapter = new ArrayAdapter<String>(ContactList.this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+                        contactListAdapter = new ArrayAdapter<String>(ContactList.this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllOrderedDistinctContacts(currentDevicePhoneNumber));
                         mContactList.setAdapter(contactListAdapter);
                         confirmPhoneNumberAlertDialog.dismiss();
                     }
@@ -177,7 +186,7 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
 //                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactList.this).edit();
 //                editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
 //                editor.commit();
-//                contactListAdapter = new ArrayAdapter<String>(ContactList.this, R.layout.activity_contact_list, databaseCommunicator.getAllDistinctContacts(currentDevicePhoneNumber));
+//                contactListAdapter = new ArrayAdapter<String>(ContactList.this, R.layout.activity_contact_list, databaseCommunicator.getAllOrderedDistinctContacts(currentDevicePhoneNumber));
 //                mContactList.setAdapter(contactListAdapter);
 //                confirmPhoneNumberAlertDialog.dismiss();
 //            }

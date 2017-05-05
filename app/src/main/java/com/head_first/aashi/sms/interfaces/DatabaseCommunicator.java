@@ -13,6 +13,6 @@ import java.util.List;
 
 public interface DatabaseCommunicator {
     public boolean addMessageToDatabase(Message message);
-    public List<String> getAllDistinctContacts(@NonNull String currentDevicePhoneNumber);
+    public List<String> getAllOrderedDistinctContacts(@NonNull String currentDevicePhoneNumber);
     public List<Message> getListOfMessagesExchangedBetweenPhoneNumbers(@NonNull String phoneNumber1, @NonNull String phoneNumber2);
 }
