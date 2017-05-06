@@ -46,8 +46,9 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                     ,PreferenceManager.getDefaultSharedPreferences(context).getString(context.getResources().getString(R.string.currentDevicePhoneNumber), null)
                     , messageBody));
             Intent smsChatActivityIntent = new Intent(context, SMSChatActivity.class);
-            smsChatActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(context.getResources().getString(R.string.otherContactPhoneNumber), sentBy);
+            //smsChatActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            smsChatActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            smsChatActivityIntent.putExtra(context.getResources().getString(R.string.otherContactPhoneNumber), sentBy);
             context.startActivity(smsChatActivityIntent);
 
 //            Intent smsChatActivityIntent = new Intent();
@@ -56,3 +57,4 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         }
     }
 }
+

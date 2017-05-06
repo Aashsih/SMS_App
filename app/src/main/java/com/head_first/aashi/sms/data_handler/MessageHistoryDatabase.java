@@ -59,9 +59,11 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             + "ORDER BY " + PRIMARY_KEY_COLUMN_NAME;
 
     private static DatabaseCommunicator databaseCommunicator;
+    private Context context;
 
     private MessageHistoryDatabase(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context.getApplicationContext();
     }
 
     public static DatabaseCommunicator getInstance(@NonNull Context context){
@@ -89,13 +91,12 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             || message.getMessageText() == null){
             return false;
         }
-
-//        PhoneNumberUtils.formatNumberToE164(
-//                message.getSentBy(), ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getSimCountryIso());
+        String sentBy = StringUtil.convertToNzNumber(message.getSentBy());
+        String sentTo = StringUtil.convertToNzNumber(message.getSentTo());
         ContentValues contentValues = new ContentValues();
         contentValues.put(PRIMARY_KEY_COLUMN_NAME, getRowCount());
-        contentValues.put(SENT_BY_COLUMN_NAME, message.getSentBy());
-        contentValues.put(SENT_TO_COLUMN_NAME, message.getSentTo());
+        contentValues.put(SENT_BY_COLUMN_NAME, sentBy);
+        contentValues.put(SENT_TO_COLUMN_NAME, sentTo);
         contentValues.put(MESSAGE_COLUMN_NAME, message.getMessageText());
         getWritableDatabase().insert(TABLE_NAME, null, contentValues);
         return true;
@@ -107,6 +108,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         if(!StringUtil.isNumeric(currentDevicePhoneNumber)){
             throw new IllegalArgumentException("The current device phone ()"+ currentDevicePhoneNumber +" number should be numeric");
         }
+        currentDevicePhoneNumber = StringUtil.convertToNzNumber(currentDevicePhoneNumber);
         Map<Integer, String> idToPhoneNumberMap = new HashMap<>();
         Set<String> contactList = new HashSet<>();
         Cursor cursor = getReadableDatabase().rawQuery(GET_ORDERED_DISTINCT_SENT_BY_PHONE_NUMBERS, null);
@@ -143,6 +145,8 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         if(!StringUtil.isNumeric(phoneNumber1) || !StringUtil.isNumeric(phoneNumber2)){
             throw new IllegalArgumentException("The provided phone numbers should be numeric");
         }
+        phoneNumber1 = StringUtil.convertToNzNumber(phoneNumber1);
+        phoneNumber2 = StringUtil.convertToNzNumber(phoneNumber2);
         Cursor cursor = getReadableDatabase().rawQuery(GET_MESSAGES_BETWEEN_PHONE_NUMBERS, new String[] {phoneNumber1, phoneNumber2, phoneNumber1, phoneNumber2});
         if(cursor != null){
             while(cursor.moveToNext()){
@@ -180,17 +184,18 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     //The following methods were created for testing purpose
     private void addMockData(){
         //for emulator 15555215554
-        addMessageToDatabase(new Message("021","0211098546","Hi I am a stranger"));
-        addMessageToDatabase(new Message("0211098546","021","I will block you now"));
-        addMessageToDatabase(new Message("021","0211098546","My name is barry allen and i am the fastest man alive"));
-        addMessageToDatabase(new Message("0211098546","021","Ohk! then we can talk"));
-        addMessageToDatabase(new Message("021","0211098546","So what do you think about my show?"));
-        addMessageToDatabase(new Message("0211098546","021","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("0211098546","022","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("0211098546","022","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("022","0211098546","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("022","0211098546","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("055","0211098546","Get Faster you idiot!"));
+        //+6421098546
+        addMessageToDatabase(new Message("028987678","+6421098546","Hi I am a stranger"));
+        addMessageToDatabase(new Message("+6421098546","+6428987678","I will block you now"));
+        addMessageToDatabase(new Message("+6428987678","+6421098546","My name is barry allen and i am the fastest man alive"));
+        addMessageToDatabase(new Message("+6421098546","+6428987678","Ohk! then we can talk"));
+        addMessageToDatabase(new Message("+6428987678","+6421098546","So what do you think about my show?"));
+        addMessageToDatabase(new Message("+6421098546","+6428987678","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("+6421098546","+6428987678","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("+6421098546","+6428987678","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("+6428987678","+6421098546","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("+6428987678","+6421098546","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("+6428987678","+6421098546","Get Faster you idiot!"));
     }
 
     private void getAllDatabaseInfo(){

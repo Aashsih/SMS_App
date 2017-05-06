@@ -29,19 +29,38 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
     private static final String SMS_SENT = "SMS_SENT";
     private static final int SMS_SENT_CONFIRMATION = 1;
 
+    private SentMessageReceiver sentMessageReceiver;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(sentMessageReceiver == null){
+            sentMessageReceiver = new SentMessageReceiver();
+            registerReceiver(sentMessageReceiver, new IntentFilter(SMS_SENT));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(sentMessageReceiver);
+    }
+
     public boolean sendSMS(@NonNull Message message){
         ArrayList<PendingIntent> pendingIntents = new ArrayList<>();
         for(int i = 0; i < (message.getMessageText().length() / SINGLE_SMS_LENGTH )+ 1; i++){
             pendingIntents.add(PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
                     new Intent(SMS_SENT), 0));
         }
-        registerReceiver(new SentMessageReceiver(message), new IntentFilter(SMS_SENT));
+        sentMessageReceiver.setMessage(message);
         SmsManager smsManager = SmsManager.getDefault();
         if(message.getMessageText().length() > SINGLE_SMS_LENGTH){
             smsManager.sendMultipartTextMessage(message.getSentTo(), null, convertMessageIntoList(message.getMessageText()), pendingIntents, null);
         }
         else{
-            smsManager.sendTextMessage(message.getSentTo(), null, message.getMessageText(), pendingIntents.get(0), null);
+            smsManager.sendTextMessage(message.getSentTo(), null, message.getMessageText(),
+                    PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
+                            new Intent(SMS_SENT), 0), null);
         }
         return true;
     }
@@ -62,7 +81,7 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
     private class SentMessageReceiver extends BroadcastReceiver{
         private Message message;
 
-        public SentMessageReceiver(@NonNull Message message){
+        public void setMessage(@NonNull Message message){
             this.message = message;
         }
 

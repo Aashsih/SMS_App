@@ -54,7 +54,7 @@ public class SMSChatListAdapter extends BaseAdapter {
         String devicePhoneNumber = (PreferenceManager.getDefaultSharedPreferences(context)).getString(context.getResources().getString(R.string.currentDevicePhoneNumber), null);
         if(convertView == null){
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            if(messages.get(position).getSentBy().equalsIgnoreCase(devicePhoneNumber)){
+            if(messages.get(position).getSentBy().equalsIgnoreCase(StringUtil.convertToNzNumber(devicePhoneNumber))){
                 convertView = layoutInflater.inflate(LIST_ITEM_LAYOUT_RIGHT, null);
             }
             else{

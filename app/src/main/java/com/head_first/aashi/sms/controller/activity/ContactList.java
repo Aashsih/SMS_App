@@ -143,7 +143,7 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
         }
         else{
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-            editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
+            editor.putString(getResources().getString(R.string.currentDevicePhoneNumber), StringUtil.convertToNzNumber(currentDevicePhoneNumber));
             editor.commit();
             contactListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllOrderedDistinctContacts(currentDevicePhoneNumber));
             mContactList.setAdapter(contactListAdapter);
@@ -209,7 +209,7 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
                     String currentDevicePhoneNumber = mPhoneNumberEditText.getText().toString();
                     if(currentDevicePhoneNumber != null && StringUtil.isNumeric(currentDevicePhoneNumber)){
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ContactList.this).edit();
-                        editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),currentDevicePhoneNumber);
+                        editor.putString(getResources().getString(R.string.currentDevicePhoneNumber),StringUtil.convertToNzNumber(currentDevicePhoneNumber));
                         editor.commit();
                         contactListAdapter = new ArrayAdapter<String>(ContactList.this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllOrderedDistinctContacts(currentDevicePhoneNumber));
                         mContactList.setAdapter(contactListAdapter);

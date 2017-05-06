@@ -30,7 +30,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".controller.activity.NewMessage" />
-        <activity android:name=".controller.activity.SMSChatActivity"></activity>
+        <activity android:name=".controller.activity.SMSChatActivity"
+            android:launchMode="singleInstance"></activity>
     </application>
 
 </manifest>
