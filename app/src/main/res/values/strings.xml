@@ -6,6 +6,9 @@
     <string name="currentDevicePhoneNumber">CurrentDevicePhoneNumber</string>
     <string name="otherContactPhoneNumber">SenderPhoneNumber</string>
 
+    <!-- menu__sms_chat constants -->
+    <string name="locationItemText">Location</string>
+
     <!-- MessageListActivity -->
     <string name="messageListActionBarTitle">Messages</string>
 

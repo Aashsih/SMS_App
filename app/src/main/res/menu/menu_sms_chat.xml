@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.head_first.aashi.sms.controller.activity.ContactList">
+    <item
+        android:id="@+id/locationItem"
+
+        app:showAsAction="ifRoom"
+        android:orderInCategory="1"
+        android:title="@string/locationItemText"
+        android:icon="@android:drawable/ic_menu_mylocation" />
+</menu>
