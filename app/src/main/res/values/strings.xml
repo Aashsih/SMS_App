@@ -6,6 +6,11 @@
     <string name="currentDevicePhoneNumber">CurrentDevicePhoneNumber</string>
     <string name="otherContactPhoneNumber">SenderPhoneNumber</string>
 
+    <!-- User Toast Messages -->
+    <string name="smsSentConfirmation">Message Sent</string>
+    <string name="smsNotSent">Message Not Sent</string>
+    <string name="enterNumberErrorMessage">Please Enter a Number</string>
+
     <!-- menu__sms_chat constants -->
     <string name="locationItemText">Location</string>
 

@@ -33,6 +33,9 @@ import com.head_first.aashi.sms.utils.StringUtil;
 public class ContactList extends AppCompatActivity{// implements DialogInterface.OnClickListener{
 
     private static final int READ_PHONE_STATE_PERMISSION_REQUEST_CODE = 0;
+    private static final int READ_SMS_REQUEST_CODE = 1;
+    private static final int SEND_SMS_REQUEST_CODE = 2;
+    private static final int RECEIVE_SMS_REQUEST_CODE = 3;
 
     //Views
     private ListView mContactList;
@@ -104,17 +107,39 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
                     setupContactList();
                 }
                 else{
-                    Toast.makeText(this, getResources().getString(R.string.acceptReadPhoneStatePermission), Toast.LENGTH_SHORT);
+                    //Toast.makeText(this, getResources().getString(R.string.acceptReadPhoneStatePermission), Toast.LENGTH_SHORT);
+                    finish();
                 }
                 break;
             }
+            case RECEIVE_SMS_REQUEST_CODE:
+            case SEND_SMS_REQUEST_CODE:
+            case READ_SMS_REQUEST_CODE:{
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    setupContactList();
+                }
+                else{
+                    //Toast.makeText(this, getResources().getString(R.string.acceptReadPhoneStatePermission), Toast.LENGTH_SHORT);
+                    finish();
+                }
+                break;
+            }
+
         }
     }
 
     public void setupContactList(){
         String currentDevicePhoneNumber = ((TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE)).getLine1Number();
         if(currentDevicePhoneNumber == null || currentDevicePhoneNumber.isEmpty()){
-            showAlertDialogToEnterPhoneNumber();
+            String numberStoredInSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this).getString(getResources().getString(R.string.currentDevicePhoneNumber), null);
+            if(numberStoredInSharedPreferences == null || numberStoredInSharedPreferences.isEmpty()){
+                showAlertDialogToEnterPhoneNumber();
+            }
+            else{
+                currentDevicePhoneNumber = numberStoredInSharedPreferences;
+                contactListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseCommunicator.getAllOrderedDistinctContacts(currentDevicePhoneNumber));
+                mContactList.setAdapter(contactListAdapter);
+            }
         }
         else{
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -133,6 +158,33 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
             }
             else{
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, READ_PHONE_STATE_PERMISSION_REQUEST_CODE);
+            }
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
+                != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)){
+
+            }
+            else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS}, READ_SMS_REQUEST_CODE);
+            }
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)){
+
+            }
+            else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_REQUEST_CODE);
+            }
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
+                != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)){
+
+            }
+            else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, RECEIVE_SMS_REQUEST_CODE);
             }
         }
         else{

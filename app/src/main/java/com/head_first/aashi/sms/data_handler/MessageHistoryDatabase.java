@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteAbortException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.telephony.PhoneNumberUtils;
+import android.telephony.TelephonyManager;
 
 import com.head_first.aashi.sms.interfaces.DatabaseCommunicator;
 import com.head_first.aashi.sms.model.Message;
@@ -87,6 +89,9 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             || message.getMessageText() == null){
             return false;
         }
+
+//        PhoneNumberUtils.formatNumberToE164(
+//                message.getSentBy(), ((TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE)).getSimCountryIso());
         ContentValues contentValues = new ContentValues();
         contentValues.put(PRIMARY_KEY_COLUMN_NAME, getRowCount());
         contentValues.put(SENT_BY_COLUMN_NAME, message.getSentBy());
@@ -175,17 +180,17 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     //The following methods were created for testing purpose
     private void addMockData(){
         //for emulator 15555215554
-        addMessageToDatabase(new Message("021","15555215554","Hi I am a stranger"));
-        addMessageToDatabase(new Message("15555215554","021","I will block you now"));
-        addMessageToDatabase(new Message("021","15555215554","My name is barry allen and i am the fastest man alive"));
-        addMessageToDatabase(new Message("15555215554","021","Ohk! then we can talk"));
-        addMessageToDatabase(new Message("021","15555215554","So what do you think about my show?"));
-        addMessageToDatabase(new Message("15555215554","021","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("15555215554","022","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("15555215554","022","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("022","15555215554","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("022","15555215554","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("055","15555215554","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("021","0211098546","Hi I am a stranger"));
+        addMessageToDatabase(new Message("0211098546","021","I will block you now"));
+        addMessageToDatabase(new Message("021","0211098546","My name is barry allen and i am the fastest man alive"));
+        addMessageToDatabase(new Message("0211098546","021","Ohk! then we can talk"));
+        addMessageToDatabase(new Message("021","0211098546","So what do you think about my show?"));
+        addMessageToDatabase(new Message("0211098546","021","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("0211098546","022","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("0211098546","022","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("022","0211098546","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("022","0211098546","Get Faster you idiot!"));
+        addMessageToDatabase(new Message("055","0211098546","Get Faster you idiot!"));
     }
 
     private void getAllDatabaseInfo(){

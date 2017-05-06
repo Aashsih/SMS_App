@@ -5,12 +5,12 @@ package com.head_first.aashi.sms.utils;
  */
 
 public class StringUtil {
-
     public static boolean isNumeric(String string){
         if(string == null){
             return false;
         }
         else{
+
             return string != null && string.matches("[-+]?\\d*\\.?\\d+");
         }
     }
