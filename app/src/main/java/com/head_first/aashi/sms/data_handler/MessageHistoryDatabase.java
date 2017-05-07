@@ -47,10 +47,12 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     private static final String GET_ROW_COUNT = "SELECT COUNT(*) FROM " + TABLE_NAME + "";
     private static final String GET_ORDERED_DISTINCT_SENT_BY_PHONE_NUMBERS = "SELECT MAX("+ PRIMARY_KEY_COLUMN_NAME +"), " + SENT_BY_COLUMN_NAME
             + " FROM " + TABLE_NAME
-            + " GROUP BY " + SENT_BY_COLUMN_NAME + ";";
+            + " GROUP BY " + SENT_BY_COLUMN_NAME
+            + " ORDER BY " + PRIMARY_KEY_COLUMN_NAME;
     private static final String GET_ORDERED_DISTINCT_SENT_TO_PHONE_NUMBERS = "SELECT MAX("+ PRIMARY_KEY_COLUMN_NAME +"), " + SENT_TO_COLUMN_NAME
             + " FROM " + TABLE_NAME
-            + " GROUP BY " + SENT_TO_COLUMN_NAME + ";";
+            + " GROUP BY " + SENT_TO_COLUMN_NAME
+            + " ORDER BY " + PRIMARY_KEY_COLUMN_NAME;
     private static final String GET_MESSAGES_BETWEEN_PHONE_NUMBERS =
             "SELECT " + SENT_BY_COLUMN_NAME + "," + SENT_TO_COLUMN_NAME + "," + MESSAGE_COLUMN_NAME
             + " FROM " + TABLE_NAME
@@ -132,7 +134,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             }
         }
         List<Integer> sortedIds = new ArrayList<>(idToPhoneNumberMap.keySet());
-        Collections.sort(sortedIds);
+        Collections.sort(sortedIds, Collections.<Integer>reverseOrder());
         for(Integer id : sortedIds){
             listOfOrderedDistinctContacts.add(idToPhoneNumberMap.get(id));
         }

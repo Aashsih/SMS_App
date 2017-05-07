@@ -38,7 +38,9 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
         android:layout_above="@id/messageText"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true">
     </ListView>
 
 </RelativeLayout>

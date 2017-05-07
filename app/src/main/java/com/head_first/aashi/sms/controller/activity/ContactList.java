@@ -78,6 +78,12 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        setupContactList();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_contact_list, menu);
@@ -104,7 +110,9 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
         switch (requestCode){
             case READ_PHONE_STATE_PERMISSION_REQUEST_CODE: {
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    setupContactList();
+                    if(contactListAdapter == null){
+                        setupContactList();
+                    }
                 }
                 else{
                     //Toast.makeText(this, getResources().getString(R.string.acceptReadPhoneStatePermission), Toast.LENGTH_SHORT);
@@ -116,7 +124,9 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
             case SEND_SMS_REQUEST_CODE:
             case READ_SMS_REQUEST_CODE:{
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    setupContactList();
+                    if(contactListAdapter != null){
+                        setupContactList();
+                    }
                 }
                 else{
                     //Toast.makeText(this, getResources().getString(R.string.acceptReadPhoneStatePermission), Toast.LENGTH_SHORT);

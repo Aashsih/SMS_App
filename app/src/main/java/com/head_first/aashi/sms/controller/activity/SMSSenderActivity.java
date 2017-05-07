@@ -43,7 +43,10 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        unregisterReceiver(sentMessageReceiver);
+        if(sentMessageReceiver != null){
+            unregisterReceiver(sentMessageReceiver);
+            sentMessageReceiver = null;
+        }
     }
 
     public boolean sendSMS(@NonNull Message message){
