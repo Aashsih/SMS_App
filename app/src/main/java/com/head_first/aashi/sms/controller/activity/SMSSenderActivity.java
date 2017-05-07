@@ -55,6 +55,7 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
             pendingIntents.add(PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
                     new Intent(SMS_SENT), 0));
         }
+        message.setSentByCurrentDevice(true);
         sentMessageReceiver.setMessage(message);
         SmsManager smsManager = SmsManager.getDefault();
         if(message.getMessageText().length() > SINGLE_SMS_LENGTH){

@@ -36,6 +36,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
     private  static final String SENT_BY_COLUMN_NAME = "SenderPhoneNumber";
     private  static final String SENT_TO_COLUMN_NAME = "ReceiverPhoneNumber";
     private  static final String MESSAGE_COLUMN_NAME = "Message";
+    private  static final String IS_SENT_BY_CURRENT_DEVICE_COLUMN_NAME = "IsSentByCurrentDevice";
 
     private static final String DROP_TABLE_QUERY = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static final String TABLE_CREATE_QUERY =
@@ -43,6 +44,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             "("+ PRIMARY_KEY_COLUMN_NAME +" int NOT NULL, "+ SENT_BY_COLUMN_NAME + " varchar(12) NOT NULL, "
             + SENT_TO_COLUMN_NAME + " varchar(12) NOT NULL, "
             + MESSAGE_COLUMN_NAME +" varchar(1000) NOT NULL,"
+            + IS_SENT_BY_CURRENT_DEVICE_COLUMN_NAME + " int NOT NULL,"
             +" PRIMARY KEY (Id));";
     private static final String GET_ROW_COUNT = "SELECT COUNT(*) FROM " + TABLE_NAME + "";
     private static final String GET_ORDERED_DISTINCT_SENT_BY_PHONE_NUMBERS = "SELECT MAX("+ PRIMARY_KEY_COLUMN_NAME +"), " + SENT_BY_COLUMN_NAME
@@ -54,7 +56,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
             + " GROUP BY " + SENT_TO_COLUMN_NAME
             + " ORDER BY " + PRIMARY_KEY_COLUMN_NAME;
     private static final String GET_MESSAGES_BETWEEN_PHONE_NUMBERS =
-            "SELECT " + SENT_BY_COLUMN_NAME + "," + SENT_TO_COLUMN_NAME + "," + MESSAGE_COLUMN_NAME
+            "SELECT " + SENT_BY_COLUMN_NAME + "," + SENT_TO_COLUMN_NAME + "," + MESSAGE_COLUMN_NAME + ", " + IS_SENT_BY_CURRENT_DEVICE_COLUMN_NAME
             + " FROM " + TABLE_NAME
             + " WHERE (" + SENT_BY_COLUMN_NAME + " = ? AND " + SENT_TO_COLUMN_NAME + " = ?)"
                 + " OR (" + SENT_TO_COLUMN_NAME + " = ? AND " + SENT_BY_COLUMN_NAME + " = ?)"
@@ -100,6 +102,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         contentValues.put(SENT_BY_COLUMN_NAME, sentBy);
         contentValues.put(SENT_TO_COLUMN_NAME, sentTo);
         contentValues.put(MESSAGE_COLUMN_NAME, message.getMessageText());
+        contentValues.put(IS_SENT_BY_CURRENT_DEVICE_COLUMN_NAME, message.isSentByCurrentDevice());
         getWritableDatabase().insert(TABLE_NAME, null, contentValues);
         return true;
     }
@@ -152,7 +155,7 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         Cursor cursor = getReadableDatabase().rawQuery(GET_MESSAGES_BETWEEN_PHONE_NUMBERS, new String[] {phoneNumber1, phoneNumber2, phoneNumber1, phoneNumber2});
         if(cursor != null){
             while(cursor.moveToNext()){
-                messageList.add(new Message(cursor.getString(0), cursor.getString(1), cursor.getString(2)));
+                messageList.add(new Message(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3) > 0));
             }
         }
         return messageList;

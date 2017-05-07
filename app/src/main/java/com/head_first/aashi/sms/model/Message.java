@@ -10,6 +10,7 @@ public class Message {
     private String sentBy;
     private String sentTo;
     private String messageText;
+    private boolean sentByCurrentDevice;
 
     public static boolean isNumeric(String string){
         if(string == null){
@@ -35,6 +36,11 @@ public class Message {
         this.setSentBy(sentBy);
         this.setSentTo(sentTo);
         this.setMessageText(messageText);
+    }
+
+    public Message(String sentBy, String sentTo, String messageText, boolean sentByCurrentDevice){
+        this(sentBy, sentTo, messageText);
+        this.setSentByCurrentDevice(sentByCurrentDevice);
     }
 
     public String getSentBy() {
@@ -65,5 +71,11 @@ public class Message {
         this.messageText = messageText;
     }
 
+    public boolean isSentByCurrentDevice() {
+        return sentByCurrentDevice;
+    }
 
+    public void setSentByCurrentDevice(boolean sentByCurrentDevice) {
+        this.sentByCurrentDevice = sentByCurrentDevice;
+    }
 }
