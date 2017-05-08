@@ -27,5 +27,6 @@
     <string name="enterNumberHint">Phone Number</string>
     <string name="confirmNumber">Confirm</string>
     <string name="quitApp">Quit App</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

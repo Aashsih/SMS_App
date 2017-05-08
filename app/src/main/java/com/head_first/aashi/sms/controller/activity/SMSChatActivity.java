@@ -14,7 +14,10 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.head_first.aashi.sms.R;
 import com.head_first.aashi.sms.data_handler.MessageHistoryDatabase;
 import com.head_first.aashi.sms.interfaces.DatabaseCommunicator;
@@ -24,6 +27,7 @@ import com.head_first.aashi.sms.utils.StringUtil;
 
 public class SMSChatActivity extends SMSSenderActivity {
     public static final String SMS_RECEIVED = "custom.action.SMSRECEIVEDINFO";
+    private static final int PLACE_PICKER_REQUEST = 2;
 
     //View
     private ListView mSMSChat;
@@ -52,13 +56,7 @@ public class SMSChatActivity extends SMSSenderActivity {
         mSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(StringUtil.isNumeric(otherContactPhoneNumber)){
-                    sendSMS(new Message(PreferenceManager.getDefaultSharedPreferences(SMSChatActivity.this).getString(getResources().getString(R.string.currentDevicePhoneNumber), null),
-                            otherContactPhoneNumber, mMessageText.getText().toString()));
-                    mMessageText.setText("");
-                    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(mMessageText.getWindowToken(), 0);
-                }
+                onSendSMS();
             }
         });
         String currentDevicePhoneNumber = PreferenceManager.getDefaultSharedPreferences(this)
@@ -86,10 +84,23 @@ public class SMSChatActivity extends SMSSenderActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.locationItem) {
             //Start the Location Activity here
+            startPlacePickerIntent();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                final Place place = PlacePicker.getPlace(this, data);
+                mMessageText.setText(String.format("Place: %s", place.getName()));
+                onSendSMS();
+            }
+        }
     }
 
     public void refreshScreen(){
@@ -97,6 +108,27 @@ public class SMSChatActivity extends SMSSenderActivity {
                 databaseCommunicator.getListOfMessagesExchangedBetweenPhoneNumbers(PreferenceManager.getDefaultSharedPreferences(this)
                         .getString(getResources().getString(R.string.currentDevicePhoneNumber), null), otherContactPhoneNumber));
         mSMSChat.setAdapter(smsChatListAdapter);
+    }
+
+    private void startPlacePickerIntent(){
+        try {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void onSendSMS(){
+        if(StringUtil.isNumeric(otherContactPhoneNumber)){
+            sendSMS(new Message(PreferenceManager.getDefaultSharedPreferences(SMSChatActivity.this).getString(getResources().getString(R.string.currentDevicePhoneNumber), null),
+                    otherContactPhoneNumber, mMessageText.getText().toString()));
+            mMessageText.setText("");
+            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(mMessageText.getWindowToken(), 0);
+        }
     }
 
     private class SmsReceiver extends BroadcastReceiver {
