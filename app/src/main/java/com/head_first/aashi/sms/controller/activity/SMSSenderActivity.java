@@ -50,23 +50,30 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
     }
 
     public boolean sendSMS(@NonNull Message message){
-        ArrayList<PendingIntent> pendingIntents = new ArrayList<>();
-        for(int i = 0; i < (message.getMessageText().length() / SINGLE_SMS_LENGTH )+ 1; i++){
-            pendingIntents.add(PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
-                    new Intent(SMS_SENT), 0));
+        if(!message.getMessageText().isEmpty()){
+            if(sentMessageReceiver == null){
+                sentMessageReceiver = new SentMessageReceiver();
+                registerReceiver(sentMessageReceiver, new IntentFilter(SMS_SENT));
+            }
+            ArrayList<PendingIntent> pendingIntents = new ArrayList<>();
+            for(int i = 0; i < (message.getMessageText().length() / SINGLE_SMS_LENGTH )+ 1; i++){
+                pendingIntents.add(PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
+                        new Intent(SMS_SENT), 0));
+            }
+            message.setSentByCurrentDevice(true);
+            sentMessageReceiver.setMessage(message);
+            SmsManager smsManager = SmsManager.getDefault();
+            if(message.getMessageText().length() > SINGLE_SMS_LENGTH){
+                smsManager.sendMultipartTextMessage(message.getSentTo(), null, convertMessageIntoList(message.getMessageText()), pendingIntents, null);
+            }
+            else{
+                smsManager.sendTextMessage(message.getSentTo(), null, message.getMessageText(),
+                        PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
+                                new Intent(SMS_SENT), 0), null);
+            }
+            return true;
         }
-        message.setSentByCurrentDevice(true);
-        sentMessageReceiver.setMessage(message);
-        SmsManager smsManager = SmsManager.getDefault();
-        if(message.getMessageText().length() > SINGLE_SMS_LENGTH){
-            smsManager.sendMultipartTextMessage(message.getSentTo(), null, convertMessageIntoList(message.getMessageText()), pendingIntents, null);
-        }
-        else{
-            smsManager.sendTextMessage(message.getSentTo(), null, message.getMessageText(),
-                    PendingIntent.getBroadcast(this, SMS_SENT_CONFIRMATION,
-                            new Intent(SMS_SENT), 0), null);
-        }
-        return true;
+        return false;
     }
 
     private ArrayList<String> convertMessageIntoList(@NonNull String message){

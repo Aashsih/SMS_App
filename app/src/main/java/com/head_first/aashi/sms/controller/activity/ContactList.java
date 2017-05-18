@@ -86,7 +86,7 @@ public class ContactList extends AppCompatActivity{// implements DialogInterface
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_contact_list, menu);
+        //getMenuInflater().inflate(R.menu.menu_contact_list, menu);
         return true;
     }
 

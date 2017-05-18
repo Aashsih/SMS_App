@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,12 +45,13 @@ public class SMSChatActivity extends SMSSenderActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_smschat);
         databaseCommunicator = MessageHistoryDatabase.getInstance(this);
         otherContactPhoneNumber = getIntent().getStringExtra(getResources().getString(R.string.otherContactPhoneNumber));
         if(otherContactPhoneNumber == null || !StringUtil.isNumeric(otherContactPhoneNumber)){
             finish();
         }
+        setTitle(otherContactPhoneNumber);
+        setContentView(R.layout.activity_smschat);
         mSMSChat = (ListView) findViewById(R.id.smsChat);
         mMessageText = (EditText) findViewById(R.id.messageText);
         mSendMessage = (FloatingActionButton) findViewById(R.id.sendMessage);
@@ -97,8 +99,14 @@ public class SMSChatActivity extends SMSSenderActivity {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 final Place place = PlacePicker.getPlace(this, data);
-                mMessageText.setText(String.format("Place: %s", place.getName()));
-                onSendSMS();
+                //mMessageText.setText(String.format("Place: %s", place.getName()));
+                if(place.getAddress() == null || place.getAddress().toString().isEmpty()){
+                    mMessageText.setText(place.getName());
+                }
+                else{
+                    mMessageText.setText(place.getAddress());
+                }
+                //onSendSMS();
             }
         }
     }

@@ -26,8 +26,8 @@ public class NewMessage extends SMSSenderActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(getResources().getString(R.string.newMessageActionBarTitle));
         setContentView(R.layout.activity_new_message);
-
         mMessageText = (EditText) findViewById(R.id.messageText);
         mSendTo = (EditText) findViewById(R.id.sendTo);
         mSendMessage = (FloatingActionButton) findViewById(R.id.sendMessage);
