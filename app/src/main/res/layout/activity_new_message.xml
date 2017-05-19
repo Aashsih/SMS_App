@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:fitsSystemWindows="true"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context="com.head_first.aashi.sms.controller.activity.NewMessage">
+    tools:context="com.head_first.aashi.sms.controller.activity.NewMessageActivity">
 
     <EditText
         android:id="@+id/sendTo"
@@ -45,5 +45,6 @@
     app:srcCompat="@drawable/paper_plane_24"
     android:layout_marginLeft="@dimen/fab_margin"
     android:layout_alignParentRight="true"
-    android:layout_alignParentBottom="true"/>
+    android:layout_alignParentBottom="true"
+        app:backgroundTint="@color/colorPrimaryDark" />
 </RelativeLayout>

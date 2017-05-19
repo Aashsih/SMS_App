@@ -51,8 +51,8 @@ public class SMSChatListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        String devicePhoneNumber = (PreferenceManager.getDefaultSharedPreferences(context)).getString(context.getResources().getString(R.string.currentDevicePhoneNumber), null);
-        if(convertView == null){
+        String devicePhoneNumber = (context.getResources().getString(R.string.currentDevicePhoneNumber));
+        //if(convertView == null){
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             //if(messages.get(position).getSentBy().equalsIgnoreCase(StringUtil.convertToNzNumber(devicePhoneNumber))){
             if(messages.get(position).isSentByCurrentDevice()){
@@ -61,7 +61,7 @@ public class SMSChatListAdapter extends BaseAdapter {
             else{
                 convertView = layoutInflater.inflate(LIST_ITEM_LAYOUT_LEFT, null);
             }
-        }
+        //}
         TextView textView = (TextView) convertView.findViewById(R.id.textMessage);
         textView.setText((messages.get(position)).getMessageText());
 

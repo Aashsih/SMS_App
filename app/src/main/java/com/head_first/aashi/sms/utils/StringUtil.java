@@ -13,7 +13,7 @@ public class StringUtil {
         }
         else{
 
-            return string != null && string.matches("[-+]?\\d*\\.?\\d+");
+            return string.matches("[-+]?\\d*\\.?\\d+");
         }
     }
 

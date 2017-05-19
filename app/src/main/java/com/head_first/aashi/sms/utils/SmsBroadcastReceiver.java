@@ -43,7 +43,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 messageBody += smsMessage.getMessageBody().toString();
             }
             MessageHistoryDatabase.getInstance(context).addMessageToDatabase(new Message(sentBy
-                    ,PreferenceManager.getDefaultSharedPreferences(context).getString(context.getResources().getString(R.string.currentDevicePhoneNumber), null)
+                    ,context.getResources().getString(R.string.currentDevicePhoneNumber)
                     , messageBody, false));
             Intent smsChatActivityIntent = new Intent(context, SMSChatActivity.class);
             //smsChatActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

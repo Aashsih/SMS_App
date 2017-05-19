@@ -174,40 +174,4 @@ public class MessageHistoryDatabase extends SQLiteOpenHelper implements Database
         }
         return rowCount;
     }
-
-    private String getSQLStringRepresentationOfArray(@NonNull Object[] array){
-        String string = "";
-        for(int i = 0; i < array.length; i++){
-            if(i != 0){
-                string += ",";
-            }
-            string += "\'" + array[i].toString() + "\'";
-        }
-        return string;
-    }
-
-    //The following methods were created for testing purpose
-    private void addMockData(){
-        //for emulator 15555215554
-        //+6421098546
-        addMessageToDatabase(new Message("028987678","+6421098546","Hi I am a stranger"));
-        addMessageToDatabase(new Message("+6421098546","+6428987678","I will block you now"));
-        addMessageToDatabase(new Message("+6428987678","+6421098546","My name is barry allen and i am the fastest man alive"));
-        addMessageToDatabase(new Message("+6421098546","+6428987678","Ohk! then we can talk"));
-        addMessageToDatabase(new Message("+6428987678","+6421098546","So what do you think about my show?"));
-        addMessageToDatabase(new Message("+6421098546","+6428987678","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("+6421098546","+6428987678","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("+6421098546","+6428987678","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("+6428987678","+6421098546","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("+6428987678","+6421098546","Get Faster you idiot!"));
-        addMessageToDatabase(new Message("+6428987678","+6421098546","Get Faster you idiot!"));
-    }
-
-    private void getAllDatabaseInfo(){
-        List<Message> messageList = new ArrayList<>();
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_NAME, null);
-        while(cursor.moveToNext()){
-            messageList.add(new Message(cursor.getString(1), cursor.getString(2), cursor.getString(3)));
-        }
-    }
 }

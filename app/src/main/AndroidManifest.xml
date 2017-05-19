@@ -45,7 +45,7 @@
             </intent-filter>
         </receiver>
         <activity
-            android:name=".controller.activity.ContactList"
+            android:name=".controller.activity.ContactListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -54,7 +54,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.activity.NewMessage" />
+        <activity android:name=".controller.activity.NewMessageActivity" />
         <activity
             android:name=".controller.activity.SMSChatActivity"
             android:launchMode="singleInstance" />

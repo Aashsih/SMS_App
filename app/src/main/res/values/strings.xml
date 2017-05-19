@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="acceptReadPhoneStatePermission">Please Allow App to Read Device Phone Number</string>
-    <string name="currentDevicePhoneNumber">CurrentDevicePhoneNumber</string>
+    <string name="currentDevicePhoneNumber">+64211234567</string>
     <string name="otherContactPhoneNumber">SenderPhoneNumber</string>
 
     <!-- User Toast Messages -->

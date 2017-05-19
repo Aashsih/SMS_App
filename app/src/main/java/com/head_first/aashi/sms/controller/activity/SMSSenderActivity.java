@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.head_first.aashi.sms.R;
@@ -18,7 +17,6 @@ import com.head_first.aashi.sms.model.Message;
 import com.head_first.aashi.sms.utils.DialogBoxDisplayHandler;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Aashish Indorewala on 06-May-17.
@@ -26,6 +24,7 @@ import java.util.List;
 
 public abstract class SMSSenderActivity extends AppCompatActivity {
     private static final int SINGLE_SMS_LENGTH = 160;
+    private static final int MULTI_PART_MESSAGE_UNIT_LENGTH = 153;
     private static final String SMS_SENT = "SMS_SENT";
     private static final int SMS_SENT_CONFIRMATION = 1;
 
@@ -78,12 +77,12 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
 
     private ArrayList<String> convertMessageIntoList(@NonNull String message){
         ArrayList<String> wholeMessage = new ArrayList<>();
-        if(message.length() < SINGLE_SMS_LENGTH){
+        if(message.length() < MULTI_PART_MESSAGE_UNIT_LENGTH){
             wholeMessage.add(message);
         }
         else{
-            for (int start = 0; start < message.length(); start += SINGLE_SMS_LENGTH) {
-                wholeMessage.add(message.substring(start, Math.min(message.length(), start + SINGLE_SMS_LENGTH)));
+            for (int start = 0; start < message.length(); start += MULTI_PART_MESSAGE_UNIT_LENGTH) {
+                wholeMessage.add(message.substring(start, Math.min(message.length(), start + MULTI_PART_MESSAGE_UNIT_LENGTH)));
             }
         }
         return wholeMessage;
@@ -104,8 +103,8 @@ public abstract class SMSSenderActivity extends AppCompatActivity {
                     if(SMSSenderActivity.this instanceof SMSChatActivity){
                         ((SMSChatActivity)SMSSenderActivity.this).refreshScreen();
                     }
-                    else if(SMSSenderActivity.this instanceof NewMessage){
-                        ((NewMessage)SMSSenderActivity.this).onMessageSent();
+                    else if(SMSSenderActivity.this instanceof NewMessageActivity){
+                        ((NewMessageActivity)SMSSenderActivity.this).onMessageSent();
                     }
                     Toast.makeText(context, R.string.smsSentConfirmation, Toast.LENGTH_SHORT).show();
                     break;

@@ -61,8 +61,7 @@ public class SMSChatActivity extends SMSSenderActivity {
                 onSendSMS();
             }
         });
-        String currentDevicePhoneNumber = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getResources().getString(R.string.currentDevicePhoneNumber), null);
+        String currentDevicePhoneNumber = getResources().getString(R.string.currentDevicePhoneNumber);
         smsChatListAdapter = new SMSChatListAdapter(this,
                 databaseCommunicator.getListOfMessagesExchangedBetweenPhoneNumbers(currentDevicePhoneNumber, otherContactPhoneNumber));
         mSMSChat.setAdapter(smsChatListAdapter);
@@ -113,8 +112,7 @@ public class SMSChatActivity extends SMSSenderActivity {
 
     public void refreshScreen(){
         smsChatListAdapter = new SMSChatListAdapter(this,
-                databaseCommunicator.getListOfMessagesExchangedBetweenPhoneNumbers(PreferenceManager.getDefaultSharedPreferences(this)
-                        .getString(getResources().getString(R.string.currentDevicePhoneNumber), null), otherContactPhoneNumber));
+                databaseCommunicator.getListOfMessagesExchangedBetweenPhoneNumbers(getResources().getString(R.string.currentDevicePhoneNumber), otherContactPhoneNumber));
         mSMSChat.setAdapter(smsChatListAdapter);
     }
 
@@ -131,7 +129,7 @@ public class SMSChatActivity extends SMSSenderActivity {
 
     public void onSendSMS(){
         if(StringUtil.isNumeric(otherContactPhoneNumber)){
-            sendSMS(new Message(PreferenceManager.getDefaultSharedPreferences(SMSChatActivity.this).getString(getResources().getString(R.string.currentDevicePhoneNumber), null),
+            sendSMS(new Message(getResources().getString(R.string.currentDevicePhoneNumber),
                     otherContactPhoneNumber, mMessageText.getText().toString()));
             mMessageText.setText("");
             InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
